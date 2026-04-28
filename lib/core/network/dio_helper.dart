@@ -8,7 +8,7 @@ class DioHelper {
     dio ??= Dio(
       BaseOptions(
         baseUrl: ApiConst.baseUrl,
-        connectTimeout: Duration(seconds: 5),
+        connectTimeout: Duration(seconds: 30),
         receiveTimeout: Duration(milliseconds: 3000),
         receiveDataWhenStatusError: true,
       ),
@@ -19,21 +19,33 @@ class DioHelper {
  
   }
 
-   static getRequest(String endPoint, {Map<String, dynamic>? query}) async {
+  static Future<Response<dynamic>> getRequest(
+    String endPoint, {
+    Map<String, dynamic>? query,
+  }) async {
+    if (dio == null) {
+      init();
+    }
+
     try {
-      Response response = await dio!.get(endPoint, queryParameters: query);
-      return response.data;
+      return await dio!.get(endPoint, queryParameters: query);
     } catch (e) {
-      print(e.toString());
+      throw Exception('GET $endPoint failed: $e');
     }
   }
-  
-  static post(String endPoint, {Map<String, dynamic>? data}) async {
+
+  static Future<Response<dynamic>> post(
+    String endPoint, {
+    Map<String, dynamic>? data,
+  }) async {
+    if (dio == null) {
+      init();
+    }
+
     try {
-      Response response = await dio!.post(endPoint, data: data);
-      return response.data;
+      return await dio!.post(endPoint, data: data);
     } catch (e) {
-      print(e.toString());
+      throw Exception('POST $endPoint failed: $e');
     }
   }
 }
